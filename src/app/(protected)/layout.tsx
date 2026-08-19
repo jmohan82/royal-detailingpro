@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
+import { BottomNav } from "@/components/layout/bottom-nav";
 import { useAuthStore } from "@/store/auth-store";
 
 export default function ProtectedLayout({
@@ -27,5 +28,10 @@ export default function ProtectedLayout({
     );
   }
 
-  return <>{children}</>;
+  return (
+    <>
+      {children}
+      <BottomNav />
+    </>
+  );
 }

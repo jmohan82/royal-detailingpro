@@ -14,6 +14,10 @@ service cloud.firestore {
       return isSignedIn() && userProfile().active == true;
     }
 
+    function isAdmin() {
+      return isActiveUser() && userProfile().role == 'admin';
+    }
+
     match /users/{userId} {
       allow read: if isSignedIn() && request.auth.uid == userId;
       allow write: if false;
@@ -21,7 +25,20 @@ service cloud.firestore {
 
     match /items/{itemId} {
       allow read: if isActiveUser();
-      allow write: if false;
+      allow create, update: if isAdmin() && request.resource.data.businessId == userProfile().businessId;
+      allow delete: if false;
+    }
+
+    match /expenses/{expenseId} {
+      allow read: if isAdmin();
+      allow create, update: if isAdmin() && request.resource.data.businessId == userProfile().businessId;
+      allow delete: if false;
+    }
+
+    match /businesses/{businessId} {
+      allow read: if isActiveUser() && businessId == userProfile().businessId;
+      allow create, update: if isAdmin() && businessId == userProfile().businessId;
+      allow delete: if false;
     }
 
     match /customers/{customerId} {

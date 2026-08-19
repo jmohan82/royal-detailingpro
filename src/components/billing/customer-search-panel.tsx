@@ -77,7 +77,7 @@ export function CustomerSearchPanel({ setValue }: CustomerSearchPanelProps) {
       </div>
       {searching && <p className="mt-1 text-xs text-muted-foreground">Searching…</p>}
       {!searching && status === "found" && (
-        <p className="mt-1 text-xs text-emerald-600">Existing customer found.</p>
+        <p className="mt-1 text-xs text-success">Existing customer found.</p>
       )}
       {!searching && status === "new" && (
         <p className="mt-1 text-xs text-muted-foreground">

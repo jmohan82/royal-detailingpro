@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -15,6 +16,7 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useItems } from "@/hooks/use-items";
 import { calculateTotals } from "@/lib/billing-math";
+import { cn } from "@/lib/utils";
 import { saveBill } from "@/services/billing-service";
 import { useAuthStore } from "@/store/auth-store";
 import type { Item } from "@/types/item";
@@ -41,8 +43,11 @@ function emptyBill(): BillingInput {
 
 export function BillingForm() {
   const user = useAuthStore((state) => state.user);
+  const router = useRouter();
   const { items, error: itemsError } = useItems(user?.businessId);
   const [submitting, setSubmitting] = useState(false);
+  // Admins see the bottom tab bar, so the fixed submit bar needs to sit above it.
+  const hasBottomNav = user?.role === "admin";
 
   const form = useForm<BillingInput>({
     resolver: zodResolver(billingSchema),
@@ -82,13 +87,14 @@ export function BillingForm() {
     if (!user) return;
     setSubmitting(true);
     try {
-      const { invoiceNumber } = await saveBill({
+      const { invoiceId, invoiceNumber } = await saveBill({
         businessId: user.businessId,
         createdBy: user.uid,
         input: values,
       });
       toast.success(`Bill saved — ${invoiceNumber}`);
       reset(emptyBill());
+      router.push(`/receipt/${invoiceId}`);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unable to save bill.";
       toast.error(message);
@@ -102,7 +108,7 @@ export function BillingForm() {
       onSubmit={handleSubmit(onSubmit, () => {
         toast.error("Please fix the highlighted fields before saving.");
       })}
-      className="flex flex-col gap-4 pb-24"
+      className={cn("flex flex-col gap-4", hasBottomNav ? "pb-40" : "pb-24")}
     >
       <Card>
         <CardHeader>
@@ -268,7 +274,12 @@ export function BillingForm() {
         </CardContent>
       </Card>
 
-      <div className="fixed inset-x-0 bottom-0 border-t bg-background p-4">
+      <div
+        className={cn(
+          "fixed inset-x-0 border-t bg-background p-4 print:hidden",
+          hasBottomNav ? "bottom-14" : "bottom-0",
+        )}
+      >
         <Button
           type="submit"
           disabled={submitting}

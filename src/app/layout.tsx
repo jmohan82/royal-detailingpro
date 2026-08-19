@@ -17,14 +17,14 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Royal DetailingPro",
-  description: "Billing and operations for Royal Detailing",
+  description: "Billing, expenses, ledger and reporting for Royal Detailing.",
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  themeColor: "#0f172a",
+  themeColor: "#256fc9",
 };
 
 export default function RootLayout({
