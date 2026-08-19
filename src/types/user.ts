@@ -1,4 +1,6 @@
-export type UserRole = "admin" | "receptionist";
+export const userRoles = ["admin", "manager", "billing"] as const;
+
+export type UserRole = (typeof userRoles)[number];
 
 export interface AppUser {
   uid: string;

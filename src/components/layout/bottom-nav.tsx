@@ -4,30 +4,45 @@ import { BarChart3, LayoutDashboard, MoreHorizontal, Receipt, Wallet } from "luc
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { useBusinessProfile } from "@/hooks/use-business-profile";
+import { canAccessPage, type PageKey } from "@/lib/permissions";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth-store";
 
-const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/", label: "Billing", icon: Receipt },
-  { href: "/expenses", label: "Expenses", icon: Wallet },
-  { href: "/reports", label: "Reports", icon: BarChart3 },
-  { href: "/more", label: "More", icon: MoreHorizontal },
+const navItems: { href: string; label: string; icon: typeof Receipt; page: PageKey | null }[] = [
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, page: "dashboard" },
+  { href: "/", label: "Billing", icon: Receipt, page: null },
+  { href: "/expenses", label: "Expenses", icon: Wallet, page: "expenses" },
+  { href: "/reports", label: "Reports", icon: BarChart3, page: "reports" },
+  { href: "/more", label: "More", icon: MoreHorizontal, page: null },
 ];
 
-// Items, Ledger and Settings live behind the "More" tab, so it should read active on those routes too.
-const moreRoutes = ["/more", "/items", "/ledger", "/settings"];
+// Items, Ledger, Settings (and Users, for admins) live behind the "More" tab.
+const moreRoutes = ["/more", "/items", "/ledger", "/settings", "/users"];
+const morePages: PageKey[] = ["items", "ledger", "settings"];
 
-/** Bottom tab bar — admin only. Receptionists only have Billing, so they get no nav chrome. */
+/** Bottom tab bar — shown to every active user, filtered to the pages their role can open. */
 export function BottomNav() {
   const user = useAuthStore((state) => state.user);
+  const { profile } = useBusinessProfile(user?.businessId);
   const pathname = usePathname();
 
-  if (user?.role !== "admin") return null;
+  if (!user) return null;
+
+  const hasMoreAccess =
+    user.role === "admin" || morePages.some((page) => canAccessPage(user.role, page, profile?.rolePermissions));
+
+  const visibleItems = navItems.filter((item) => {
+    if (item.href === "/more") return hasMoreAccess;
+    if (item.page === null) return true;
+    return canAccessPage(user.role, item.page, profile?.rolePermissions);
+  });
+
+  if (visibleItems.length <= 1) return null;
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-20 flex h-14 border-t bg-background print:hidden">
-      {navItems.map(({ href, label, icon: Icon }) => {
+      {visibleItems.map(({ href, label, icon: Icon }) => {
         const active =
           href === "/"
             ? pathname === "/"

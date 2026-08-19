@@ -1,3 +1,5 @@
+import type { RolePermissions } from "@/lib/permissions";
+
 export interface BusinessProfile {
   id: string;
   name: string;
@@ -9,4 +11,6 @@ export interface BusinessProfile {
   openingBalanceDate: string;
   updatedAt: number;
   updatedBy: string;
+  /** Which pages Manager and Billing roles can open. Admins always have full access. */
+  rolePermissions?: RolePermissions;
 }

@@ -1,16 +1,16 @@
 import { ExpensesScreen } from "@/components/expenses/expenses-screen";
-import { AdminGuard } from "@/components/layout/admin-guard";
 import { AppHeader } from "@/components/layout/app-header";
+import { PageGuard } from "@/components/layout/page-guard";
 
 export default function ExpensesPage() {
   return (
-    <AdminGuard>
+    <PageGuard page="expenses">
       <div className="min-h-dvh bg-muted/20">
         <AppHeader title="Expenses" />
         <main className="mx-auto max-w-lg px-4 py-4 pb-24">
           <ExpensesScreen />
         </main>
       </div>
-    </AdminGuard>
+    </PageGuard>
   );
 }

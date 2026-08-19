@@ -1,6 +1,7 @@
 import { doc, getDoc, onSnapshot, setDoc } from "firebase/firestore";
 
 import { db } from "@/lib/firebase/config";
+import type { RolePermissions } from "@/lib/permissions";
 import type { BusinessProfile } from "@/types/business";
 import type { BusinessProfileInput } from "@/validation/business";
 
@@ -48,4 +49,11 @@ export async function saveBusinessProfile(
     },
     { merge: true },
   );
+}
+
+export async function saveRolePermissions(
+  businessId: string,
+  rolePermissions: RolePermissions,
+): Promise<void> {
+  await setDoc(doc(db, "businesses", businessId), { rolePermissions }, { merge: true });
 }
