@@ -81,7 +81,7 @@ export function InvoicesReport({ invoices, loading }: { invoices: Invoice[]; loa
                   <TableRow
                     key={invoice.id}
                     className="cursor-pointer"
-                    onClick={() => router.push(`/receipt/${invoice.id}`)}
+                    onClick={() => router.push(`/receipt?id=${invoice.id}`)}
                   >
                     <TableCell className="text-muted-foreground">
                       {formatIsoDateShort(invoice.billingDate)}

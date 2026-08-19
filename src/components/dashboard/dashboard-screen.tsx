@@ -109,7 +109,7 @@ export function DashboardScreen() {
               {metrics.recentInvoices.map((invoice) => (
                 <li key={invoice.id}>
                   <Link
-                    href={`/receipt/${invoice.id}`}
+                    href={`/receipt?id=${invoice.id}`}
                     className="flex items-center justify-between py-2 text-sm"
                   >
                     <div className="flex flex-col">

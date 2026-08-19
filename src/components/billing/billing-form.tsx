@@ -94,7 +94,7 @@ export function BillingForm() {
       });
       toast.success(`Bill saved — ${invoiceNumber}`);
       reset(emptyBill());
-      router.push(`/receipt/${invoiceId}`);
+      router.push(`/receipt?id=${invoiceId}`);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unable to save bill.";
       toast.error(message);
