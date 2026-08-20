@@ -54,6 +54,7 @@ export function ItemList({ items, loading, onEdit }: ItemListProps) {
                 <TableHead>Name</TableHead>
                 <TableHead>Type</TableHead>
                 <TableHead className="text-right">Price</TableHead>
+                <TableHead className="text-center">Reminder</TableHead>
                 <TableHead className="text-center">Active</TableHead>
                 <TableHead className="text-right">Edit</TableHead>
               </TableRow>
@@ -68,6 +69,9 @@ export function ItemList({ items, loading, onEdit }: ItemListProps) {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">₹{item.defaultPrice.toFixed(2)}</TableCell>
+                  <TableCell className="text-center text-xs text-muted-foreground">
+                    {item.reminderIntervalDays > 0 ? `${item.reminderIntervalDays}d` : "—"}
+                  </TableCell>
                   <TableCell className="text-center">
                     <Switch
                       checked={item.active}

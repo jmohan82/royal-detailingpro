@@ -1,7 +1,14 @@
 import type { UserRole } from "@/types/user";
 
 /** Pages that are gated per-role. Billing (the "/" screen) and Users (admin-only) aren't in here. */
-export type PageKey = "dashboard" | "expenses" | "items" | "reports" | "ledger" | "settings";
+export type PageKey =
+  | "dashboard"
+  | "expenses"
+  | "items"
+  | "reports"
+  | "ledger"
+  | "settings"
+  | "reminders";
 
 export const PAGE_CATALOG: { key: PageKey; label: string }[] = [
   { key: "dashboard", label: "Dashboard" },
@@ -9,6 +16,7 @@ export const PAGE_CATALOG: { key: PageKey; label: string }[] = [
   { key: "items", label: "Products & Services" },
   { key: "reports", label: "Reports" },
   { key: "ledger", label: "Ledger" },
+  { key: "reminders", label: "Reminders" },
   { key: "settings", label: "Store Settings" },
 ];
 
@@ -20,7 +28,7 @@ export type RolePermissions = Record<ConfigurableRole, PageKey[]>;
  * (every active user can already open the Billing screen). Used until the admin configures
  * page access on the Users & Roles screen. */
 export const DEFAULT_ROLE_PERMISSIONS: RolePermissions = {
-  manager: ["dashboard", "expenses", "items", "reports", "ledger"],
+  manager: ["dashboard", "expenses", "items", "reports", "ledger", "reminders"],
   billing: [],
 };
 

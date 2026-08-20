@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpen, ChevronRight, Package, Settings, Users } from "lucide-react";
+import { BookOpen, ChevronRight, MessageCircle, Package, Settings, Users } from "lucide-react";
 import Link from "next/link";
 
 import { Card } from "@/components/ui/card";
@@ -21,6 +21,13 @@ const links: {
     description: "Manage what you bill for",
     icon: Package,
     page: "items",
+  },
+  {
+    href: "/reminders",
+    label: "Reminders",
+    description: "Customers due for a follow-up on WhatsApp",
+    icon: MessageCircle,
+    page: "reminders",
   },
   {
     href: "/ledger",

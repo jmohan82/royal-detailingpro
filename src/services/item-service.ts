@@ -28,7 +28,12 @@ export function subscribeActiveItems(
     (snapshot) => {
       const items = snapshot.docs.map((docSnap) => {
         const data = docSnap.data() as Omit<Item, "id">;
-        return { id: docSnap.id, ...data, defaultPrice: Number(data.defaultPrice) };
+        return {
+          id: docSnap.id,
+          ...data,
+          defaultPrice: Number(data.defaultPrice),
+          reminderIntervalDays: Number(data.reminderIntervalDays ?? 0),
+        };
       });
       onChange(items);
     },
@@ -50,7 +55,12 @@ export function subscribeItems(
       const items = snapshot.docs
         .map((docSnap) => {
           const data = docSnap.data() as Omit<Item, "id">;
-          return { id: docSnap.id, ...data, defaultPrice: Number(data.defaultPrice) };
+          return {
+            id: docSnap.id,
+            ...data,
+            defaultPrice: Number(data.defaultPrice),
+            reminderIntervalDays: Number(data.reminderIntervalDays ?? 0),
+          };
         })
         .sort((a, b) => a.name.localeCompare(b.name));
       onChange(items);
@@ -66,6 +76,7 @@ export async function createItem(businessId: string, input: ItemInput): Promise<
     type: input.type,
     defaultPrice: input.defaultPrice,
     active: input.active,
+    reminderIntervalDays: input.reminderIntervalDays,
   });
 }
 
@@ -76,6 +87,7 @@ export async function updateItem(itemId: string, businessId: string, input: Item
     type: input.type,
     defaultPrice: input.defaultPrice,
     active: input.active,
+    reminderIntervalDays: input.reminderIntervalDays,
   });
 }
 

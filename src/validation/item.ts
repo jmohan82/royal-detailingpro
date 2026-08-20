@@ -7,6 +7,7 @@ export const itemSchema = z.object({
   type: z.enum(itemTypes),
   defaultPrice: z.number().min(0, "Price cannot be negative"),
   active: z.boolean(),
+  reminderIntervalDays: z.number().min(0, "Cannot be negative"),
 });
 
 export type ItemInput = z.infer<typeof itemSchema>;

@@ -17,9 +17,9 @@ const navItems: { href: string; label: string; icon: typeof Receipt; page: PageK
   { href: "/more", label: "More", icon: MoreHorizontal, page: null },
 ];
 
-// Items, Ledger, Settings (and Users, for admins) live behind the "More" tab.
-const moreRoutes = ["/more", "/items", "/ledger", "/settings", "/users"];
-const morePages: PageKey[] = ["items", "ledger", "settings"];
+// Items, Ledger, Reminders, Settings (and Users, for admins) live behind the "More" tab.
+const moreRoutes = ["/more", "/items", "/ledger", "/reminders", "/settings", "/users"];
+const morePages: PageKey[] = ["items", "ledger", "reminders", "settings"];
 
 /** Bottom tab bar — shown to every active user, filtered to the pages their role can open. */
 export function BottomNav() {

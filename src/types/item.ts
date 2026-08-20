@@ -7,4 +7,7 @@ export interface Item {
   type: ItemType;
   defaultPrice: number;
   active: boolean;
+  /** Days after purchase to remind the customer to come back (e.g. 30 for a wash, 180 for
+   * coating). 0 means this item never generates a reminder. */
+  reminderIntervalDays: number;
 }

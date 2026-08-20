@@ -71,6 +71,12 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    match /reminderSends/{reminderSendId} {
+      allow read: if isActiveUser();
+      allow create: if isActiveUser() && request.resource.data.businessId == userProfile().businessId;
+      allow update, delete: if false;
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

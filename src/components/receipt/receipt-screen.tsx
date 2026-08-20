@@ -1,10 +1,12 @@
 "use client";
 
+import { MessageCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { ReceiptDocument } from "@/components/receipt/receipt-document";
 import { Button } from "@/components/ui/button";
+import { buildThankYouMessage, buildWhatsAppLink } from "@/lib/whatsapp";
 import { fetchBusinessProfile } from "@/services/business-service";
 import { getInvoiceById } from "@/services/invoice-service";
 import { useAuthStore } from "@/store/auth-store";
@@ -50,6 +52,16 @@ export function ReceiptScreen({ invoiceId }: { invoiceId: string }) {
     };
   }, [invoiceId, user]);
 
+  function handleSendThankYou() {
+    if (!invoice) return;
+    const message = buildThankYouMessage({
+      customerName: invoice.customerName,
+      businessName: profile?.name || "Royal DetailingPro",
+      itemNames: invoice.items.map((item) => item.name),
+    });
+    window.open(buildWhatsAppLink(invoice.customerMobile, message), "_blank", "noopener,noreferrer");
+  }
+
   if (loading) {
     return (
       <div className="flex min-h-dvh items-center justify-center">
@@ -69,12 +81,18 @@ export function ReceiptScreen({ invoiceId }: { invoiceId: string }) {
 
   return (
     <div className="flex min-h-dvh flex-col items-center bg-muted/20 py-6">
-      <div className="mb-4 flex w-full max-w-xs items-center justify-between gap-2 px-4 print:hidden">
-        <Button type="button" variant="outline" onClick={() => router.push("/")}>
-          Back
-        </Button>
-        <Button type="button" onClick={() => window.print()}>
-          Print / Save PDF
+      <div className="mb-4 flex w-full max-w-xs flex-col gap-2 px-4 print:hidden">
+        <div className="flex items-center justify-between gap-2">
+          <Button type="button" variant="outline" onClick={() => router.push("/")}>
+            Back
+          </Button>
+          <Button type="button" onClick={() => window.print()}>
+            Print / Save PDF
+          </Button>
+        </div>
+        <Button type="button" variant="outline" className="w-full" onClick={handleSendThankYou}>
+          <MessageCircle className="size-4" />
+          Send Thank You on WhatsApp
         </Button>
       </div>
       <div className="overflow-hidden rounded-md border bg-white shadow-sm print:border-none print:shadow-none">

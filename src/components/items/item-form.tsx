@@ -16,11 +16,17 @@ import type { Item } from "@/types/item";
 import { type ItemInput, itemSchema, itemTypes } from "@/validation/item";
 
 function emptyItem(): ItemInput {
-  return { name: "", type: "service", defaultPrice: 0, active: true };
+  return { name: "", type: "service", defaultPrice: 0, active: true, reminderIntervalDays: 0 };
 }
 
 function toInput(item: Item): ItemInput {
-  return { name: item.name, type: item.type, defaultPrice: item.defaultPrice, active: item.active };
+  return {
+    name: item.name,
+    type: item.type,
+    defaultPrice: item.defaultPrice,
+    active: item.active,
+    reminderIntervalDays: item.reminderIntervalDays ?? 0,
+  };
 }
 
 interface ItemFormProps {
@@ -133,6 +139,33 @@ export function ItemForm({ editingItem, onDone }: ItemFormProps) {
                   onChange={(event) => field.onChange(Number(event.target.value))}
                   aria-invalid={fieldState.invalid}
                 />
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+              </Field>
+            )}
+          />
+
+          <Controller
+            name="reminderIntervalDays"
+            control={control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor="item-reminder">Remind Customer After (days)</FieldLabel>
+                <Input
+                  id="item-reminder"
+                  type="number"
+                  inputMode="numeric"
+                  min={0}
+                  step="1"
+                  className="h-12 text-base"
+                  placeholder="0"
+                  value={field.value === 0 ? "" : field.value}
+                  onChange={(event) => field.onChange(Number(event.target.value))}
+                  aria-invalid={fieldState.invalid}
+                />
+                <p className="text-xs text-muted-foreground">
+                  e.g. 30 for a wash, 90 for wheel alignment, 180 for coating. Leave blank for no
+                  reminder — it&apos;ll show up on the Reminders page once due.
+                </p>
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </Field>
             )}
