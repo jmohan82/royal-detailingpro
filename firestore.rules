@@ -74,13 +74,13 @@ service cloud.firestore {
     }
 
     match /customers/{customerId} {
-      allow read: if isActiveUser();
+      allow read: if isActiveUser() && resource.data.businessId == userProfile().businessId;
       allow create, update: if isActiveUser() && request.resource.data.businessId == userProfile().businessId;
       allow delete: if false;
     }
 
     match /vehicles/{vehicleId} {
-      allow read: if isActiveUser();
+      allow read: if isActiveUser() && resource.data.businessId == userProfile().businessId;
       allow create, update: if isActiveUser() && request.resource.data.businessId == userProfile().businessId;
       allow delete: if false;
     }
