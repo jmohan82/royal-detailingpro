@@ -14,9 +14,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { useBusinessProfile } from "@/hooks/use-business-profile";
 import { useItems } from "@/hooks/use-items";
 import { calculateTotals } from "@/lib/billing-math";
 import { cn } from "@/lib/utils";
+import { buildBillMessage, buildWhatsAppLink } from "@/lib/whatsapp";
 import { saveBill } from "@/services/billing-service";
 import { useAuthStore } from "@/store/auth-store";
 import type { Item } from "@/types/item";
@@ -45,6 +47,7 @@ export function BillingForm() {
   const user = useAuthStore((state) => state.user);
   const router = useRouter();
   const { items, error: itemsError } = useItems(user?.businessId);
+  const { profile } = useBusinessProfile(user?.businessId);
   const [submitting, setSubmitting] = useState(false);
   // Admins see the bottom tab bar, so the fixed submit bar needs to sit above it.
   const hasBottomNav = user?.role === "admin";
@@ -93,6 +96,21 @@ export function BillingForm() {
         input: values,
       });
       toast.success(`Bill saved — ${invoiceNumber}`);
+
+      const message = buildBillMessage({
+        customerName: values.customerName,
+        businessName: profile?.name || "Royal DetailingPro",
+        invoiceNumber,
+        billingDate: values.billingDate,
+        items: values.items,
+        subtotal: totals.subtotal,
+        discountAmount: totals.discountAmount,
+        taxAmount: totals.taxAmount,
+        grandTotal: totals.grandTotal,
+        paymentMode: values.paymentMode,
+      });
+      window.open(buildWhatsAppLink(values.customerMobile, message), "_blank", "noopener,noreferrer");
+
       reset(emptyBill());
       router.push(`/receipt?id=${invoiceId}`);
     } catch (error) {

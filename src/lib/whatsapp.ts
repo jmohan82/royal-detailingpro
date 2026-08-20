@@ -24,6 +24,58 @@ export function buildThankYouMessage(params: {
   return `Hi ${customerName}, thank you for choosing ${businessName}! Your ${serviceList} is complete — we hope you're happy with the results. See you again soon!`;
 }
 
+/**
+ * Builds the full itemized bill as a WhatsApp text message — sent automatically the instant a
+ * bill is saved (no image, since attaching a file reliably requires a direct tap; see
+ * shareOrDownloadImage for the tap-triggered image version on the receipt page).
+ */
+export function buildBillMessage(params: {
+  customerName: string;
+  businessName: string;
+  invoiceNumber: string;
+  billingDate: string;
+  items: { name: string; quantity: number; price: number }[];
+  subtotal: number;
+  discountAmount: number;
+  taxAmount: number;
+  grandTotal: number;
+  paymentMode: string;
+}): string {
+  const {
+    customerName,
+    businessName,
+    invoiceNumber,
+    billingDate,
+    items,
+    subtotal,
+    discountAmount,
+    taxAmount,
+    grandTotal,
+    paymentMode,
+  } = params;
+
+  const lines = items.map(
+    (item) => `${item.name} x${item.quantity} - Rs.${(item.quantity * item.price).toFixed(2)}`,
+  );
+
+  return [
+    `Hi ${customerName}, thank you for choosing ${businessName}!`,
+    "",
+    `Invoice: ${invoiceNumber}`,
+    `Date: ${billingDate}`,
+    "",
+    ...lines,
+    "",
+    `Subtotal: Rs.${subtotal.toFixed(2)}`,
+    `Discount: -Rs.${discountAmount.toFixed(2)}`,
+    `Tax: +Rs.${taxAmount.toFixed(2)}`,
+    `Total: Rs.${grandTotal.toFixed(2)}`,
+    `Payment: ${paymentMode}`,
+    "",
+    "We hope you're happy with the results. See you again soon!",
+  ].join("\n");
+}
+
 export function buildReminderMessage(params: {
   customerName: string;
   businessName: string;
