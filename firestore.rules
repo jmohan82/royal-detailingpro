@@ -18,6 +18,32 @@ service cloud.firestore {
       return isActiveUser() && userProfile().role == 'admin';
     }
 
+    function businessProfile() {
+      return get(/databases/$(database)/documents/businesses/$(userProfile().businessId)).data;
+    }
+
+    // Mirrors DEFAULT_ROLE_PERMISSIONS in src/lib/permissions.ts — used until the admin has
+    // configured page access on the Users & Roles screen (rolePermissions unset on the business).
+    function defaultPagesForRole(role) {
+      return role == 'manager'
+        ? ['dashboard', 'expenses', 'items', 'reports', 'ledger', 'reminders']
+        : [];
+    }
+
+    function allowedPagesForRole(role) {
+      return businessProfile().get('rolePermissions', {}).get(role, defaultPagesForRole(role));
+    }
+
+    // True for admins always, and for managers/billing users whose configured (or default) page
+    // access includes the given page — keeps data access in sync with what the Users & Roles
+    // screen shows them.
+    function hasPageAccess(page) {
+      return isAdmin() ||
+        (isActiveUser() &&
+          (userProfile().role == 'manager' || userProfile().role == 'billing') &&
+          page in allowedPagesForRole(userProfile().role));
+    }
+
     match /users/{userId} {
       allow read: if isSignedIn() && request.auth.uid == userId;
       allow read: if isAdmin() && resource.data.businessId == userProfile().businessId;
@@ -27,19 +53,23 @@ service cloud.firestore {
 
     match /items/{itemId} {
       allow read: if isActiveUser();
-      allow create, update: if isAdmin() && request.resource.data.businessId == userProfile().businessId;
+      allow create, update: if isActiveUser()
+        && request.resource.data.businessId == userProfile().businessId
+        && hasPageAccess('items');
       allow delete: if false;
     }
 
     match /expenses/{expenseId} {
-      allow read: if isAdmin();
-      allow create, update: if isAdmin() && request.resource.data.businessId == userProfile().businessId;
+      allow read: if hasPageAccess('expenses');
+      allow create, update: if isActiveUser()
+        && request.resource.data.businessId == userProfile().businessId
+        && hasPageAccess('expenses');
       allow delete: if false;
     }
 
     match /businesses/{businessId} {
       allow read: if isActiveUser() && businessId == userProfile().businessId;
-      allow create, update: if isAdmin() && businessId == userProfile().businessId;
+      allow create, update: if businessId == userProfile().businessId && hasPageAccess('settings');
       allow delete: if false;
     }
 
