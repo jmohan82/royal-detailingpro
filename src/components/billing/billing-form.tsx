@@ -147,7 +147,7 @@ export function BillingForm() {
 
           <Field>
             <FieldLabel>Search Customer</FieldLabel>
-            <CustomerSearchPanel setValue={setValue} />
+            <CustomerSearchPanel setValue={setValue} businessId={user?.businessId} />
           </Field>
 
           <Controller
