@@ -86,7 +86,7 @@ service cloud.firestore {
     }
 
     match /inventory/{inventoryId} {
-      allow read: if isActiveUser();
+      allow read: if isActiveUser() && resource.data.businessId == userProfile().businessId;
       allow create, update: if isActiveUser() && request.resource.data.businessId == userProfile().businessId;
       allow delete: if false;
     }
@@ -96,13 +96,13 @@ service cloud.firestore {
     }
 
     match /invoices/{invoiceId} {
-      allow read: if isActiveUser();
+      allow read: if isActiveUser() && resource.data.businessId == userProfile().businessId;
       allow create: if isActiveUser() && request.resource.data.businessId == userProfile().businessId;
       allow update, delete: if false;
     }
 
     match /reminderSends/{reminderSendId} {
-      allow read: if isActiveUser();
+      allow read: if isActiveUser() && resource.data.businessId == userProfile().businessId;
       allow create: if isActiveUser() && request.resource.data.businessId == userProfile().businessId;
       allow update, delete: if false;
     }
